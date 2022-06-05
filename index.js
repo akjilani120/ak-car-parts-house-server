@@ -17,6 +17,7 @@ try{
   await client.connect();
   const populerCarcollection = client.db("carHouse").collection("populerCar");
   const specialCarcollection = client.db("carHouse").collection("specialCar");
+  const offerCarcollection = client.db("carHouse").collection("offerCar");
   app.get("/populerCar" , async(req , res) =>{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
@@ -25,7 +26,11 @@ try{
     const result = await specialCarcollection.find().toArray()
     res.send(result)
   })
- 
+  app.get("/offerCar" , async(req , res) =>{
+    const result = await offerCarcollection.find().toArray()
+    res.send(result)
+  })
+  
 }finally{
 
 }
