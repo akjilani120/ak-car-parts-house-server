@@ -18,6 +18,7 @@ try{
   const populerCarcollection = client.db("carHouse").collection("populerCar");
   const specialCarcollection = client.db("carHouse").collection("specialCar");
   const offerCarcollection = client.db("carHouse").collection("offerCar");
+  const lamborghiniCarcollection = client.db("carHouse").collection("lamborghini");
   app.get("/populerCar" , async(req , res) =>{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
@@ -28,6 +29,10 @@ try{
   })
   app.get("/offerCar" , async(req , res) =>{
     const result = await offerCarcollection.find().toArray()
+    res.send(result)
+  })
+  app.get("/lamborghini" , async(req , res) =>{
+    const result = await lamborghiniCarcollection.find().toArray()
     res.send(result)
   })
   
