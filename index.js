@@ -21,6 +21,7 @@ try{
   const lamborghiniCarcollection = client.db("carHouse").collection("lamborghini");
   const bugattiCarcollection = client.db("carHouse").collection("bugatti");
   const bmwCarcollection = client.db("carHouse").collection("bmw");
+  const userCarcollection = client.db("carHouse").collection("user");
   app.get("/populerCar" , async(req , res) =>{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
@@ -44,6 +45,20 @@ try{
   app.get("/bmw" , async(req , res) =>{
     const result = await bmwCarcollection.find().toArray()
     res.send(result)
+  })
+  app.put("/user/:email", async(req , res) =>{
+   const email = req.params.email
+   const user = req.body
+   console.log(email)
+   const filter ={ email}
+   const options = { upsert: true };
+   const updateDoc = {
+    $set: user
+  };
+  const result = await userCarcollection.updateOne(filter, updateDoc, options);
+  console.log(result)
+  res.send(result)
+
   })
   
 }finally{
