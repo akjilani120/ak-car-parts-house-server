@@ -4,6 +4,7 @@ const port = process.env.PORT || 5000
 const cors = require('cors');
 require('dotenv').config()
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const jwt = require('jsonwebtoken');
  app.use(cors())
  app.use(express.json())
  
@@ -48,16 +49,15 @@ try{
   })
   app.put("/user/:email", async(req , res) =>{
    const email = req.params.email
-   const user = req.body
-   console.log(email)
+   const user = req.body  
    const filter ={ email}
    const options = { upsert: true };
    const updateDoc = {
     $set: user
   };
   const result = await userCarcollection.updateOne(filter, updateDoc, options);
-  console.log(result)
-  res.send(result)
+  const token = jwt.sign({email}, process.env.ACCESS_SECERTE_PIN);
+  res.send({token , result})
 
   })
   
