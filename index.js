@@ -23,6 +23,7 @@ try{
   const bugattiCarcollection = client.db("carHouse").collection("bugatti");
   const bmwCarcollection = client.db("carHouse").collection("bmw");
   const userCarcollection = client.db("carHouse").collection("user");
+  const orderCarcollection = client.db("carHouse").collection("order");
   app.get("/populerCar" , async(req , res) =>{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
@@ -65,6 +66,12 @@ try{
   const token = jwt.sign({email}, process.env.ACCESS_SECERTE_PIN);
   res.send({token , result})
 
+  })
+
+  app.post('/orders' , async(req , res) =>{
+    const order = req.body   
+    const result = await orderCarcollection.insertOne(order)
+    res.send(result)
   })
   
 }finally{
