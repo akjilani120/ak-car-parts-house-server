@@ -62,6 +62,18 @@ try{
     const result = await lamborghiniCarcollection.findOne(query)    
     res.send(result)
   })
+  app.get('/bmw/:id' , async (req , res) =>{
+    const id = req.params.id;   
+    const query = { _id: ObjectId(id) }
+    const result = await bmwCarcollection.findOne(query)    
+    res.send(result)
+  })
+  app.get('/bugatti/:id' , async (req , res) =>{
+    const id = req.params.id;   
+    const query = { _id: ObjectId(id) }
+    const result = await bugattiCarcollection.findOne(query)    
+    res.send(result)
+  })
   app.get("/bugatti" , async(req , res) =>{
     const result = await bugattiCarcollection.find().toArray()
     res.send(result)
@@ -120,6 +132,28 @@ try{
      $set: comment
    };
    const result = await lamborghiniCarcollection.updateOne(filter , updateDoc, options )
+   res.send(result)
+  })
+  app.put("/bmw/:id" , async(req , res) =>{
+    const id = req.params.id;    
+    const filter={_id: ObjectId(id) }
+    const comment = req.body     
+    const options = { upsert: true };
+    const updateDoc = {
+     $set: comment
+   };
+   const result = await bmwCarcollection.updateOne(filter , updateDoc, options )
+   res.send(result)
+  })
+  app.put("/bugatti/:id" , async(req , res) =>{
+    const id = req.params.id;    
+    const filter={_id: ObjectId(id) }
+    const comment = req.body     
+    const options = { upsert: true };
+    const updateDoc = {
+     $set: comment
+   };
+   const result = await bugattiCarcollection.updateOne(filter , updateDoc, options )
    res.send(result)
   })
   
