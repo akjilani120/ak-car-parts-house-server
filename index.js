@@ -101,6 +101,12 @@ try{
     const result = await orderCarcollection.insertOne(order)
     res.send(result)
   })
+  app.get("/myOrders" , async (req , res)=>{
+    const email = req.query.email
+   const query= { email : email}
+   const result = await orderCarcollection.find(query).toArray()
+   res.send(result)
+  })
   app.put("/specialCar/:id" , async(req , res) =>{
     const id = req.params.id;    
     const filter={_id: ObjectId(id) }
