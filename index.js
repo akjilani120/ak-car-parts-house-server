@@ -13,7 +13,18 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
  
 function verifyJWT (req , res , next){
-
+  const authorizationHead = req.headers.authorization
+ if(!authorizationHead){
+  return res.status(401).send({ message: "Unauthorization access" })
+ }
+ const token = authorizationHead.split(" ")[1]
+  jwt.verify(token, process.env.ACCESS_SECERTE_PIN, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ message: "Fobidden access" })
+    }
+    req.decoded = decoded;
+    next()
+  });
 }
 
 async function run(){
@@ -82,7 +93,7 @@ try{
     const result = await bmwCarcollection.find().toArray()
     res.send(result)
   })
-  app.put("/user/:email", async(req , res) =>{
+  app.put("/user/:email", verifyJWT,  async(req , res) =>{
    const email = req.params.email
    const user = req.body  
    const filter ={ email}
@@ -101,13 +112,13 @@ try{
     const result = await orderCarcollection.insertOne(order)
     res.send(result)
   })
-  app.get("/myOrders" , async (req , res)=>{
-    const email = req.query.email
+  app.get("/myOrders", verifyJWT , async (req , res)=>{
+    const email = req.query.email    
    const query= { email : email}
    const result = await orderCarcollection.find(query).toArray()
    res.send(result)
   })
-  app.put("/specialCar/:id" , async(req , res) =>{
+  app.put("/specialCar/:id"  , async(req , res) =>{
     const id = req.params.id;    
     const filter={_id: ObjectId(id) }
     const comment = req.body     
