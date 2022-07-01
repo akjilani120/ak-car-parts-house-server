@@ -43,6 +43,12 @@ try{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
   })
+  app.get('/populerCar/:id' , async (req , res) =>{
+    const id = req.params.id;   
+    const query = { _id: ObjectId(id) }
+    const result = await populerCarcollection.findOne(query)    
+    res.send(result)
+  })
   app.get("/specialCar" , async(req , res) =>{
     const result = await specialCarcollection.find().toArray()
     res.send(result)
@@ -63,6 +69,7 @@ try{
     const result = await offerCarcollection.findOne(query)    
     res.send(result)
   })
+ 
   app.get("/lamborghini" , async(req , res) =>{
     const result = await lamborghiniCarcollection.find().toArray()
     res.send(result)
@@ -133,6 +140,17 @@ try{
      $set: comment
    };
    const result = await specialCarcollection.updateOne(filter , updateDoc, options )
+   res.send(result)
+  })
+  app.put("/populerCar/:id"  , async(req , res) =>{
+    const id = req.params.id;    
+    const filter={_id: ObjectId(id) }
+    const comment = req.body     
+    const options = { upsert: true };
+    const updateDoc = {
+     $set: comment
+   };
+   const result = await populerCarcollection.updateOne(filter , updateDoc, options )
    res.send(result)
   })
   app.put("/offerCar/:id" , async(req , res) =>{
