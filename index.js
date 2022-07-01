@@ -197,6 +197,31 @@ try{
    const result = await bugattiCarcollection.updateOne(filter , updateDoc, options )
    res.send(result)
   })
+  app.get("/users" , verifyJWT , async(req , res) =>{
+    const result = await userCarcollection.find().toArray()
+    res.send(result)
+  })
+  app.get('/admin/:email', verifyJWT, async (req, res) => {
+    const email = req.params.email;
+    const user = await userCarcollection.findOne({ email: email })
+    const isAdmin = user.role === "admin";
+    res.send(isAdmin)
+  })
+  app.put('/users/admin/:email' , verifyJWT , async(req , res) =>{
+    const email = req.params.email;
+    const requester = req.decoded.email;
+    const requesterAccount = await userCarcollection.findOne({ email: requester });
+    if (requesterAccount.role === 'admin') {
+      const filter = { email }
+      const updateDoc = {
+        $set: { role: "admin" }
+      }
+      const result = await userCarcollection.updateOne(filter, updateDoc)
+      res.send(result)
+    } else {
+      res.status(403).send({ message: "Forbidden Access" })
+    }
+  })
   
 }finally{
 
