@@ -93,7 +93,7 @@ try{
     const result = await bmwCarcollection.find().toArray()
     res.send(result)
   })
-  app.put("/user/:email", verifyJWT,  async(req , res) =>{
+  app.put("/user/:email",   async(req , res) =>{
    const email = req.params.email
    const user = req.body  
    const filter ={ email}
@@ -112,11 +112,17 @@ try{
     const result = await orderCarcollection.insertOne(order)
     res.send(result)
   })
-  app.get("/myOrders", verifyJWT , async (req , res)=>{
+  app.get("/myOrders", verifyJWT,   async (req , res)=>{
     const email = req.query.email    
    const query= { email : email}
    const result = await orderCarcollection.find(query).toArray()
    res.send(result)
+  })
+  app.delete("/myOrders/:id" , async (req ,res) =>{
+    const id = req.params.id
+    const query = {_id : ObjectId(id)}
+    const result = await orderCarcollection.deleteOne(query)
+    res.send(result)
   })
   app.put("/specialCar/:id"  , async(req , res) =>{
     const id = req.params.id;    
