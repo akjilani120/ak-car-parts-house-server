@@ -43,6 +43,11 @@ try{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
   })
+  app.post("/populerCar"  ,verifyJWT , async(req , res) =>{
+   const query = req.body   
+   const result = await populerCarcollection.insertOne(query)
+   res.send(result)
+  })
   app.get('/populerCar/:id' , async (req , res) =>{
     const id = req.params.id;   
     const query = { _id: ObjectId(id) }
@@ -59,6 +64,11 @@ try{
     const result = await specialCarcollection.findOne(query)    
     res.send(result)
   })
+  app.post("/specialCar"  ,verifyJWT , async(req , res) =>{
+    const query = req.body   
+    const result = await specialCarcollection.insertOne(query)
+    res.send(result)
+   })
   app.get("/offerCar" , async(req , res) =>{
     const result = await offerCarcollection.find().toArray()
     res.send(result)
