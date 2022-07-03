@@ -14,14 +14,16 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
  
 function verifyJWT (req , res , next){
   const authorizationHead = req.headers.authorization
+  console.log("token access all" , authorizationHead)
  if(!authorizationHead){
   return res.status(401).send({ message: "Unauthorization access" })
  }
- const token = authorizationHead.split(" ")[1]
+ const token = authorizationHead.split(" ")[1] 
+ console.log("spite token" ,token , "env file token" , process.env.ACCESS_SECERTE_PIN)
   jwt.verify(token, process.env.ACCESS_SECERTE_PIN, (err, decoded) => {
-    if (err) {
-      return res.status(403).send({ message: "Fobidden access" })
-    }
+    // if (err) {
+    //   return res.status(403).send({ message: "Fobidden access" })
+    // }
     req.decoded = decoded;
     next()
   });
@@ -43,7 +45,7 @@ try{
     const result = await populerCarcollection.find().toArray()
     res.send(result)
   })
-  app.post("/populerCar"  ,verifyJWT , async(req , res) =>{
+  app.post("/populerCar"   , async(req , res) =>{
    const query = req.body   
    const result = await populerCarcollection.insertOne(query)
    res.send(result)
@@ -64,7 +66,7 @@ try{
     const result = await specialCarcollection.findOne(query)    
     res.send(result)
   })
-  app.post("/specialCar"  ,verifyJWT , async(req , res) =>{
+  app.post("/specialCar"   , async(req , res) =>{
     const query = req.body   
     const result = await specialCarcollection.insertOne(query)
     res.send(result)
@@ -110,8 +112,10 @@ try{
     const result = await bmwCarcollection.find().toArray()
     res.send(result)
   })
-  app.put("/user/:email",   async(req , res) =>{
-   const email = req.params.email
+  // User part page
+  app.put("/user/:email", verifyJWT,  async(req , res) =>{
+   const email = req.params.email     
+   console.log(email)
    const user = req.body  
    const filter ={ email}
    const options = { upsert: true };
@@ -123,13 +127,17 @@ try{
   res.send({token , result})
 
   })
-
+// All order add
   app.post('/orders' , async(req , res) =>{
     const order = req.body   
     const result = await orderCarcollection.insertOne(order)
     res.send(result)
   })
-  app.get("/myOrders", verifyJWT,   async (req , res)=>{
+  app.get('/allOrders' , async(req , res) =>{
+    const result = await orderCarcollection.find().toArray()
+    res.send(result)
+  })
+  app.get("/myOrders",   async (req , res)=>{
     const email = req.query.email    
    const query= { email : email}
    const result = await orderCarcollection.find(query).toArray()
@@ -207,31 +215,31 @@ try{
    const result = await bugattiCarcollection.updateOne(filter , updateDoc, options )
    res.send(result)
   })
-  app.get("/users" , verifyJWT , async(req , res) =>{
+  app.get("/users" , async(req , res) =>{
     const result = await userCarcollection.find().toArray()
     res.send(result)
   })
-  app.get('/admin/:email', verifyJWT, async (req, res) => {
+  app.get('/admin/:email',  async (req, res) => {
     const email = req.params.email;
     const user = await userCarcollection.findOne({ email: email })
     const isAdmin = user.role === "admin";
     res.send(isAdmin)
   })
-  app.put('/users/admin/:email' , verifyJWT , async(req , res) =>{
-    const email = req.params.email;
-    const requester = req.decoded.email;
-    const requesterAccount = await userCarcollection.findOne({ email: requester });
-    if (requesterAccount.role === 'admin') {
-      const filter = { email }
-      const updateDoc = {
-        $set: { role: "admin" }
-      }
-      const result = await userCarcollection.updateOne(filter, updateDoc)
-      res.send(result)
-    } else {
-      res.status(403).send({ message: "Forbidden Access" })
-    }
-  })
+  // app.put('/users/admin/:email' , verifyJWT , async(req , res) =>{
+  //   const email = req.params.email;
+  //   const requester = req.decoded.email;
+  //   const requesterAccount = await userCarcollection.findOne({ email: requester });
+  //   if (requesterAccount.role === 'admin') {
+  //     const filter = { email }
+  //     const updateDoc = {
+  //       $set: { role: "admin" }
+  //     }
+  //     const result = await userCarcollection.updateOne(filter, updateDoc)
+  //     res.send(result)
+  //   } else {
+  //     res.status(403).send({ message: "Forbidden Access" })
+  //   }
+  // })
   
 }finally{
 
