@@ -14,16 +14,16 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
  
 function verifyJWT (req , res , next){
   const authorizationHead = req.headers.authorization
-  console.log("token access all" , authorizationHead)
+  
  if(!authorizationHead){
   return res.status(401).send({ message: "Unauthorization access" })
  }
  const token = authorizationHead.split(" ")[1] 
- console.log("spite token" ,token , "env file token" , process.env.ACCESS_SECERTE_PIN)
+//  console.log("spite token" ,token , "env file token" , process.env.ACCESS_SECERTE_PIN)
   jwt.verify(token, process.env.ACCESS_SECERTE_PIN, (err, decoded) => {
-    // if (err) {
-    //   return res.status(403).send({ message: "Fobidden access" })
-    // }
+    if (err) {
+      return res.status(403).send({ message: "Fobidden access" })
+    }
     req.decoded = decoded;
     next()
   });
@@ -113,20 +113,42 @@ try{
     res.send(result)
   })
   // User part page
-  app.put("/user/:email", verifyJWT,  async(req , res) =>{
+  app.put("/user/:email",   async(req , res) =>{
    const email = req.params.email     
    console.log(email)
-   const user = req.body  
    const filter ={ email}
+   const user =  req.body
    const options = { upsert: true };
    const updateDoc = {
     $set: user
   };
   const result = await userCarcollection.updateOne(filter, updateDoc, options);
-  const token = jwt.sign({email}, process.env.ACCESS_SECERTE_PIN);
-  res.send({token , result})
-
+  res.send(result)
   })
+
+
+  //make admin
+  app.put("/user/admin/:email",   async(req , res) =>{
+    const email = req.params.email  
+    const filter ={ email}
+    const updateDoc = {
+     $set: {
+      role:'admin'
+     }
+   };
+   const result = await userCarcollection.updateOne(filter, updateDoc);
+   res.send(result)
+   })
+   //get admin
+app.get('/admin/:email', async (req,res)=>{
+  const email= req.params.email;
+  const user = await userCarcollection.findOne({email})
+  if(user.role){
+   return  res.send({isadmin: true})
+  }else {
+    return res.send({isadmin:false})
+  }
+})
 // All order add
   app.post('/orders' , async(req , res) =>{
     const order = req.body   
@@ -219,16 +241,15 @@ try{
     const result = await userCarcollection.find().toArray()
     res.send(result)
   })
-  app.get('/admin/:email',  async (req, res) => {
-    const email = req.params.email;
-    const user = await userCarcollection.findOne({ email: email })
-    const isAdmin = user.role === "admin";
-    res.send(isAdmin)
-  })
-  // app.put('/users/admin/:email' , verifyJWT , async(req , res) =>{
+  // app.get('/admin/:email',  async (req, res) => {
   //   const email = req.params.email;
-  //   const requester = req.decoded.email;
-  //   const requesterAccount = await userCarcollection.findOne({ email: requester });
+  //   const user = await userCarcollection.findOne({ email: email })
+  //   const isAdmin = user.role === "admin";
+  //   res.send(isAdmin)
+  // })
+  // app.put('/users/admin/:email' ,  async(req , res) =>{
+  //   const email = req.params.email;   
+    
   //   if (requesterAccount.role === 'admin') {
   //     const filter = { email }
   //     const updateDoc = {
@@ -236,9 +257,7 @@ try{
   //     }
   //     const result = await userCarcollection.updateOne(filter, updateDoc)
   //     res.send(result)
-  //   } else {
-  //     res.status(403).send({ message: "Forbidden Access" })
-  //   }
+  //   } 
   // })
   
 }finally{
