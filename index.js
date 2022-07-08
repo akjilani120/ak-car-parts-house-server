@@ -19,7 +19,7 @@ function verifyJWT (req , res , next){
   return res.status(401).send({ message: "Unauthorization access" })
  }
  const token = authorizationHead.split(" ")[1] 
-//  console.log("spite token" ,token , "env file token" , process.env.ACCESS_SECERTE_PIN)
+
   jwt.verify(token, process.env.ACCESS_SECERTE_PIN, (err, decoded) => {
     if (err) {
       return res.status(403).send({ message: "Fobidden access" })
@@ -115,7 +115,7 @@ try{
   // User part page
   app.put("/user/:email",   async(req , res) =>{
    const email = req.params.email     
-   console.log(email)
+   
    const filter ={ email}
    const user =  req.body
    const options = { upsert: true };
@@ -241,24 +241,7 @@ app.get('/admin/:email', async (req,res)=>{
     const result = await userCarcollection.find().toArray()
     res.send(result)
   })
-  // app.get('/admin/:email',  async (req, res) => {
-  //   const email = req.params.email;
-  //   const user = await userCarcollection.findOne({ email: email })
-  //   const isAdmin = user.role === "admin";
-  //   res.send(isAdmin)
-  // })
-  // app.put('/users/admin/:email' ,  async(req , res) =>{
-  //   const email = req.params.email;   
-    
-  //   if (requesterAccount.role === 'admin') {
-  //     const filter = { email }
-  //     const updateDoc = {
-  //       $set: { role: "admin" }
-  //     }
-  //     const result = await userCarcollection.updateOne(filter, updateDoc)
-  //     res.send(result)
-  //   } 
-  // })
+  
   
 }finally{
 
